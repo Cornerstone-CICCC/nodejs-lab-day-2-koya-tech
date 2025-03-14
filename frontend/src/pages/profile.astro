@@ -1,0 +1,66 @@
+<!-- filepath: /opt/assignment/nodejs-lab-day-2-koya-tech/frontend/src/pages/profile.astro -->
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Profile</title>
+    </head>
+    <body>
+        <h1>Profile Page</h1>
+        <div id="user-info">
+            <!-- User data will be loaded here -->
+        </div>
+        <button id="logoutBtn">Logout</button>
+
+        <script type="module">
+            async function fetchUser() {
+                try {
+                    const res = await fetch(
+                        "http://localhost:4500/check-auth",
+                        {
+                            method: "GET",
+                            credentials: "include",
+                        }
+                    );
+                    if (!res.ok) {
+                        // If the response is not ok, redirect to login page
+                        window.location.href = "/login";
+                        return;
+                    }
+                    const data = await res.json();
+                    const userInfo = document.getElementById("user-info");
+                    userInfo.innerHTML = `
+            <p>Username: ${data.username}</p>
+            <p>First Name: ${data.firstname}</p>
+            <p>Last Name: ${data.lastname}</p>
+          `;
+                } catch (error) {
+                    console.error("Error fetching user:", error);
+                    window.location.href = "/login";
+                }
+            }
+            fetchUser();
+
+            document
+                .getElementById("logoutBtn")
+                .addEventListener("click", async () => {
+                    try {
+                        const res = await fetch(
+                            "http://localhost:4500/logout",
+                            {
+                                method: "GET",
+                                credentials: "include",
+                            }
+                        );
+                        if (res.ok) {
+                            window.location.href = "/login";
+                        } else {
+                            alert("Logout failed");
+                        }
+                    } catch (error) {
+                        console.error("Logout error:", error);
+                        alert("Logout failed");
+                    }
+                });
+        </script>
+    </body>
+</html>
